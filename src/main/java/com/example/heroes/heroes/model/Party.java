@@ -2,20 +2,35 @@ package com.example.heroes.heroes.model;
 
 import java.util.List;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "parties")
 public class Party {
 
-    @NotNull
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @NotBlank(message = "El nombre de la party es obligatorio")
+
+    @Size(min = 4, max = 70, message = "La party debe tener al menos 4 caracteres")
+    @Column(nullable = false, length = 70)
     private String nombre;
+
+    @OneToMany(mappedBy = "party")
+    @ToString.Exclude
     private List<Heroe> heroes;
 }
