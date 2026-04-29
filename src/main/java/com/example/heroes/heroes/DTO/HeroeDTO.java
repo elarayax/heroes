@@ -9,4 +9,5 @@ public class HeroeDTO {
     private String clase;
     private Integer nivel;
     private String nombreParty;
+    private String nombreArma;
 }

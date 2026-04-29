@@ -80,6 +80,14 @@ public class HeroeService {
 
         if (heroe.getParty() != null) {
             dto.setNombreParty(heroe.getParty().getNombre());
+        }else{
+            dto.setNombreParty("Lobo solitario, auuu");
+        }
+
+        if (heroe.getArma() != null) {
+            dto.setNombreArma(heroe.getArma().getNombre());
+        } else {
+            dto.setNombreArma("Desarmado, todos contra mi solo");
         }
         
         return dto;
