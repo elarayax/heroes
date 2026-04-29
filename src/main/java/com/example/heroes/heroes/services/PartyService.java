@@ -1,9 +1,11 @@
 package com.example.heroes.heroes.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.heroes.heroes.model.Party;
+import com.example.heroes.heroes.DTO.PartyDTO;
 import com.example.heroes.heroes.model.Heroe;
 import com.example.heroes.heroes.repository.PartyRepository;
 import com.example.heroes.heroes.repository.HeroeRepository;
@@ -17,40 +19,57 @@ public class PartyService {
     @Autowired
     private HeroeRepository heroeRepository;
 
-    public List<Party> obtenerTodas() {
-        return partyRepository.listarTodas();
+    public List<PartyDTO> obtenerTodas() {
+        return partyRepository.findAll().stream()
+                .map(this::convertirADTO) // Transmutamos cada party
+                .toList();
     }
 
-    public Party buscarPorId(Integer id) {
-        return partyRepository.buscarPorId(id);
+    public PartyDTO buscarPorId(Integer id) {
+        Party party = partyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("¡La party no existe!"));
+        return convertirADTO(party); // Transmutamos la party encontrada
     }
 
     public Party guardar(Party party) {
-        return partyRepository.guardar(party);
+        return partyRepository.save(party);
     }
 
     public String añadirHeroeAParty(Integer partyId, Integer heroeId) {
-        Heroe heroeEncontrado = heroeRepository.buscarPorId(heroeId);
-        if (heroeEncontrado == null) {
-            return "Error: El héroe con ID " + heroeId + " no existe.";
-        }
+        Party party = partyRepository.findById(partyId)
+            .orElseThrow(() -> new RuntimeException("Error: La Party no existe."));
+        Heroe heroe = heroeRepository.findById(heroeId)
+            .orElseThrow(() -> new RuntimeException("Error: El héroe no existe."));
+        heroe.setParty(party); 
+        heroeRepository.save(heroe);
 
-        boolean exito = partyRepository.agregarHeroeAParty(partyId, heroeEncontrado);
-        
-        if (exito) {
-            return "Héroe " + heroeEncontrado.getNombre() + " añadido a la party con éxito.";
-        } else {
-            return "Error: No se encontró la Party con ID " + partyId;
-        }
+        return "El héroe '" + heroe.getNombre() + "' ahora lucha por la party: " + party.getNombre();
     }
 
     public String eliminarHeroeDeParty(Integer partyId, Integer heroeId) {
-        boolean eliminado = partyRepository.quitarHeroeDeParty(partyId, heroeId);
-        
-        if (eliminado) {
-            return "Héroe eliminado de la party correctamente.";
-        } else {
-            return "Error: No se pudo eliminar (verifica si la Party o el Héroe existen).";
+        Heroe heroe = heroeRepository.findById(heroeId)
+            .orElseThrow(() -> new RuntimeException("El héroe no existe."));
+        if (heroe.getParty() != null && heroe.getParty().getId().equals(partyId)) {
+            heroe.setParty(null);
+            heroeRepository.save(heroe);
+            return "El héroe ha sido expulsado de la party y ahora es un lobo solitario.";
         }
+        return "Error: El héroe no pertenece a esa party, no puedes expulsarlo.";
+    }
+
+    private PartyDTO convertirADTO(Party party) {
+        PartyDTO dto = new PartyDTO();
+        dto.setId(party.getId());
+        dto.setNombre(party.getNombre());
+        
+        if (party.getHeroes() != null) {
+            dto.setNombresHeroes(party.getHeroes().stream()
+                                    .map(Heroe::getNombre)
+                                    .toList());
+        } else {
+            dto.setNombresHeroes(new ArrayList<>());
+        }
+        
+        return dto;
     }
 }
