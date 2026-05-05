@@ -1,5 +1,7 @@
 package com.example.heroes.heroes.DTO;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -10,4 +12,5 @@ public class HeroeDTO {
     private Integer nivel;
     private String nombreParty;
     private String nombreArma;
+    private List<String> hechizos;
 }

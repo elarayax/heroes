@@ -1,5 +1,6 @@
 package com.example.heroes.heroes.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.heroes.heroes.DTO.HeroeDTO;
 import com.example.heroes.heroes.model.Heroe;
+import com.example.heroes.heroes.model.LibroHechizos;
 import com.example.heroes.heroes.repository.HeroeRepository;
 
 import jakarta.transaction.Transactional;
@@ -89,7 +91,15 @@ public class HeroeService {
         } else {
             dto.setNombreArma("Desarmado, todos contra mi solo");
         }
-        
+
+        List<String> nombresHechizos = new ArrayList<>();
+        if(heroe.getHechizosAprendidos() != null) {
+            for(LibroHechizos nexo : heroe.getHechizosAprendidos()) {
+                nombresHechizos.add(nexo.getMagia().getNombre());
+            }
+        }
+        dto.setHechizos(nombresHechizos);
+            
         return dto;
     }
 }

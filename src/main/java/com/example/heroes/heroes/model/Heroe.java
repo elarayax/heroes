@@ -1,5 +1,7 @@
 package com.example.heroes.heroes.model;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
@@ -52,5 +55,8 @@ public class Heroe {
 
     @OneToOne(mappedBy = "heroe")// Esto indica que el dueño de la relación es la clase Arma, en estos casos mucho muy importante
     private Arma arma;
+
+    @OneToMany(mappedBy = "heroe")
+    private List<LibroHechizos> hechizosAprendidos;
 
 }
